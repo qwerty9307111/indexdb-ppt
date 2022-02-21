@@ -91,11 +91,15 @@ The last comment block of each slide will be treated as slide notes. It will be 
 
 - 🛢 **IDBDatabase**： 表示数据库对象，在操作 indexedDB 之前，我们必须指定数据库。
 
+<br/>
+
 <v-click>
 
 - 📊 **IDBObjectStore**：表示对象仓库，类似关系型数据库的表。
 
 </v-click>
+
+<br/>
 
 <v-click>
 
@@ -103,11 +107,15 @@ The last comment block of each slide will be treated as slide notes. It will be 
 
 </v-click>
 
+<br/>
+
 <v-click>
 
 - 💼 **IDBTransaction**：indexedDB 的所有操作都是基于事务的，事务具有 ACID 四大特性。
 
 </v-click>
+
+<br/>
 
 <v-click>
 
@@ -115,11 +123,15 @@ The last comment block of each slide will be treated as slide notes. It will be 
 
 </v-click>
 
+<br/>
+
 <v-click>
 
 - 📇 **IDBIndex**：索引，索引主要用来加快数据查询的效率，但同时会增加存储的占用，本质上是一种空间换时间的方式。
 
 </v-click>
+
+<br/>
 
 <v-click>
 
