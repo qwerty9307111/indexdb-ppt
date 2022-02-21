@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "slidev build --base /indexdb-ppt/",
+    "dev": "slidev --open",
+    "export": "slidev export"
+  },
+  "dependencies": {
+    "@slidev/cli": "^0.28.5",
+    "@slidev/theme-default": "*",
+    "@slidev/theme-seriph": "*",
+    "playwright-chromium": "^1.19.0"
+  },
+  "name": "slidev"
+}
