@@ -7,7 +7,7 @@ lineNumbers: true
 download: true
 info: |
   ## 前端大容量存储方案-IndexedDB
-  [Mock Service Worker](https://mswjs.io/docs/)
+  [IndexDB](https://www.w3.org/TR/IndexedDB/)
 drawings:
   persist: false
 title: 前端大容量存储方案-IndexedDB
@@ -15,7 +15,7 @@ title: 前端大容量存储方案-IndexedDB
 
 # 前端大容量存储方案-IndexedDB
 
-[Mock Service Worker](https://mswjs.io/docs/)
+[IndexDB](https://www.w3.org/TR/IndexedDB/)
 
 <div class="pt-12">
   <span @click="$slidev.nav.next" class="px-2 py-1 rounded cursor-pointer" hover="bg-white bg-opacity-10">
@@ -39,69 +39,124 @@ The last comment block of each slide will be treated as slide notes. It will be 
 
 ---
 
-# What is Slidev?
+<Title>What is IndexDB?</Title>
 
-Slidev is a slides maker and presenter designed for developers, consist of the following features
+[IndexedDB 是一种底层 API，用于在客户端存储大量的结构化数据（也包括文件/二进制大型对象（blobs））。该 API 使用索引实现对数据的高性能搜索。](https://developer.mozilla.org/zh-CN/docs/Web/API/IndexedDB_API)
 
-- 📝 **Text-based** - focus on the content with Markdown, and then style them later
-- 🎨 **Themable** - theme can be shared and used with npm packages
-- 🧑‍💻 **Developer Friendly** - code highlighting, live coding with autocompletion
-- 🤹 **Interactive** - embedding Vue components to enhance your expressions
-- 🎥 **Recording** - built-in recording and camera view
-- 📤 **Portable** - export into PDF, PNGs, or even a hostable SPA
-- 🛠 **Hackable** - anything possible on a webpage
-
-<br>
-<br>
-
-Read more about [Why Slidev?](https://sli.dev/guide/why)
-
-<!--
-You can have `style` tag in markdown to override the style for the current page.
-Learn more: https://sli.dev/guide/syntax#embedded-styles
--->
-
-<style>
-h1 {
-  background-color: #2B90B6;
-  background-image: linear-gradient(45deg, #4EC5D4 10%, #146b8c 20%);
-  background-size: 100%;
-  -webkit-background-clip: text;
-  -moz-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  -moz-text-fill-color: transparent;
-}
-</style>
+|      | 会话期 Cookie | 持久性 Cookie | sessionStorage | localStorage | indexDB | WebSQL |
+| ---- | ---- | ---- | ---- | ---- | ---- | ---- |
+| 存储大小 | 4kb | 4kb | 2.5 ～ 10M | 2.5 ～ 10M | >100M | 已废弃 |
+| 失效时间 | 浏览器关闭 | 设置过期时间 | 浏览器关闭 | 手动清理 | 手动清理 | 已废弃 |
+| 与服务端交互 | 有 | 有 | 无 | 无 | 无 | 已废弃 |
+| 访问策略 | 同源策略 | 同源策略 | 同源策略 | 同源策略 | 同源策略 | 已废弃 |
 
 ---
 
-# Navigation
+<Title>IndexedDB 特点</Title>
 
-Hover on the bottom-left corner to see the navigation's controls panel, [learn more](https://sli.dev/guide/navigation.html)
+- 📝 **非关系型数据库(NoSql)** - 我们都知道 MySQL 等数据库都是关系型数据库，它们的主要特点就是数据都以一张二维表的形式存储，而 IndexedDB 是非关系型数据库，主要以键值对的形式存储数据。
 
-### Keyboard Shortcuts
+<v-click>
 
-|     |     |
-| --- | --- |
-| <kbd>right</kbd> / <kbd>space</kbd>| next animation or slide |
-| <kbd>left</kbd>  / <kbd>shift</kbd><kbd>space</kbd> | previous animation or slide |
-| <kbd>up</kbd> | previous slide |
-| <kbd>down</kbd> | next slide |
+- 🎨 **持久化存储** - cookie、localStorage、sessionStorage 等方式存储的数据当我们清楚浏览器缓存后，这些数据都会被清除掉的，而使用 IndexedDB 存储的数据则不会，除非手动删除该数据库。
 
-<!-- https://sli.dev/guide/animations.html#click-animations -->
-<img
-  v-click
-  class="absolute -bottom-9 -left-7 w-80 opacity-50"
-  src="https://sli.dev/assets/arrow-bottom-left.svg"
-/>
-<p v-after class="absolute bottom-23 left-45 opacity-30 transform -rotate-10">Here!</p>
+</v-click>
+
+<v-click>
+
+- 🧑‍💻 **异步操作** - IndexedDB 操作时不会锁死浏览器，用户依然可以进行其他的操作，这与 localStorage 形成鲜明的对比，后者是同步的。
+
+</v-click>
+
+<v-click>
+
+- 🎥 **同源策略** - IndexedDB 同样存在同源限制，每个数据库对应创建它的域名。网页只能访问自身域名下的数据库，而不能访问跨域的数据库。
+
+</v-click>
+
+<v-click>
+
+- 📤 **存储容量大** - 这也是 IndexedDB 最显著的特点之一了，这也是不用 localStorage 等存储方式的最好理由。
+
+</v-click>
+
+<v-click>
+
+- 🤹 **支持事务** - IndexedDB 支持事务(transaction)，这意味着一系列的操作步骤之中，只要有一步失败了，整个事务都会取消，数据库回滚的事务发生之前的状态，这和 MySQL 等数据库的事务类似。
+
+</v-click>
+---
+
+<Title>IndexedDB 核心概念</Title>
+
+- 🛢 **IDBDatabase**： 表示数据库对象，在操作 indexedDB 之前，我们必须指定数据库。
+
+<v-click>
+
+- 📊 **IDBObjectStore**：表示对象仓库，类似关系型数据库的表。
+
+</v-click>
+
+<v-click>
+
+- 👣 **IDBRequest**：操作请求对象，indexedDB 每个操作都是异步的，也就是说每个请求会先返回这个这个对象，然后根据这个对象的回调去进行后续的处理。
+
+</v-click>
+
+<v-click>
+
+- 💼 **IDBTransaction**：indexedDB 的所有操作都是基于事务的，事务具有 ACID 四大特性。
+
+</v-click>
+
+<v-click>
+
+- 👆︎ **IDBCursor**：游标对象，主要用来遍历数据。
+
+</v-click>
+
+<v-click>
+
+- 📇 **IDBIndex**：索引，索引主要用来加快数据查询的效率，但同时会增加存储的占用，本质上是一种空间换时间的方式。
+
+</v-click>
+
+<v-click>
+
+- 🗃️ **IDBKeyRange**：索引范围对象，主要用来批量查询数据，或者批量删除数据的时候使用。
+
+</v-click>
 
 ---
-layout: image-right
+
+<Title>事务的四大特性</Title>
+
+- **原子性（Atomicity）**：事务是一个不可分割的工作单位，事务中的操作要么全部成功，要么全部失败。
+
+<v-click>
+
+- **一致性（Consistency）**：事务必须使数据库从一个一致性状态变换到另外一个一致性状态。
+
+</v-click>
+
+<v-click>
+
+- **隔离性（Isolation）**：多个用户并发访问数据库时，数据库为每一个用户开启的事务，不能被其他事务的操作数据所干扰，多个并发事务之间要相互隔离。
+
+</v-click>
+
+<v-click>
+
+- **持久性（Durability）**：一个事务一旦被提交，它对数据库中数据的改变就是永久性的，接下来即使数据库发生故障也不应该对其有任何影响。
+
+</v-click>
+
+---
+layout: image-left
 image: https://source.unsplash.com/collection/94734566/1920x1080
 ---
 
-# Code
+<Title>Code</Title>
 
 Use code snippets and get the highlighting directly![^1]
 
