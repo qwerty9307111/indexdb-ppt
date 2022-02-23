@@ -1,0 +1,16 @@
+/* > 内容行左侧圆角 */
+.slidev-layout blockquote {
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+}
+
+/* 引用样式 */
+.footnotes {
+  /* @apply text-sm opacity-75; */
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  opacity: 0.75;
+}
+.footnote-backref {
+  display: none;
+}

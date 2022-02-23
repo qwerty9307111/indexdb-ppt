@@ -41,7 +41,10 @@ The last comment block of each slide will be treated as slide notes. It will be 
 
 <Title>What is IndexDB?</Title>
 
-[IndexedDB 是一种底层 API，用于在客户端存储大量的结构化数据（也包括文件/二进制大型对象（blobs））。该 API 使用索引实现对数据的高性能搜索。](https://developer.mozilla.org/zh-CN/docs/Web/API/IndexedDB_API)
+> IndexedDB 是一种底层 API，用于在客户端存储大量的结构化数据（也包括文件/二进制大型对象（blobs））。该 API 使用索引实现对数据的高性能搜索。[^1]
+
+<br/>
+<br/>
 
 |      | 会话期 Cookie | 持久性 Cookie | sessionStorage | localStorage | indexDB | WebSQL |
 | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
@@ -50,41 +53,27 @@ The last comment block of each slide will be treated as slide notes. It will be 
 | 与服务端交互 | 有 | 有 | 无 | 无 | 无 | 已废弃 |
 | 访问策略 | 同源策略 | 同源策略 | 同源策略 | 同源策略 | 同源策略 | 已废弃 |
 
+[^1]: [查看文档](https://developer.mozilla.org/zh-CN/docs/Web/API/IndexedDB_API)
+
 ---
 
 <Title>IndexedDB 特点</Title>
 
 - 📝 **非关系型数据库(NoSql)** - 我们都知道 MySQL 等数据库都是关系型数据库，它们的主要特点就是数据都以一张二维表的形式存储，而 IndexedDB 是非关系型数据库，主要以键值对的形式存储数据。
 
-<v-click>
+<v-clicks>
 
 - 🎨 **持久化存储** - cookie、localStorage、sessionStorage 等方式存储的数据当我们清楚浏览器缓存后，这些数据都会被清除掉的，而使用 IndexedDB 存储的数据则不会，除非手动删除该数据库。
 
-</v-click>
-
-<v-click>
-
 - 🧑‍💻 **异步操作** - IndexedDB 操作时不会锁死浏览器，用户依然可以进行其他的操作，这与 localStorage 形成鲜明的对比，后者是同步的。
-
-</v-click>
-
-<v-click>
 
 - 🎥 **同源策略** - IndexedDB 同样存在同源限制，每个数据库对应创建它的域名。网页只能访问自身域名下的数据库，而不能访问跨域的数据库。
 
-</v-click>
-
-<v-click>
-
 - 📤 **存储容量大** - 这也是 IndexedDB 最显著的特点之一了，这也是不用 localStorage 等存储方式的最好理由。
-
-</v-click>
-
-<v-click>
 
 - 🤹 **支持事务** - IndexedDB 支持事务(transaction)，这意味着一系列的操作步骤之中，只要有一步失败了，整个事务都会取消，数据库回滚的事务发生之前的状态，这和 MySQL 等数据库的事务类似。
 
-</v-click>
+</v-clicks>
 ---
 
 <Title>IndexedDB 核心概念</Title>
@@ -143,7 +132,13 @@ The last comment block of each slide will be treated as slide notes. It will be 
 
 <Title>事务的四大特性</Title>
 
+> 事务是一系列操作组成的工作单元，该工作单元内的操作是不可分割的，即要么所有操作都做，要么所有操作都不做，这就是事务。
+
+<br/>
+
 - **原子性（Atomicity）**：事务是一个不可分割的工作单位，事务中的操作要么全部成功，要么全部失败。
+
+<br/>
 
 <v-click>
 
@@ -151,17 +146,73 @@ The last comment block of each slide will be treated as slide notes. It will be 
 
 </v-click>
 
+<br/>
+
 <v-click>
 
 - **隔离性（Isolation）**：多个用户并发访问数据库时，数据库为每一个用户开启的事务，不能被其他事务的操作数据所干扰，多个并发事务之间要相互隔离。
 
 </v-click>
 
+<br/>
+
 <v-click>
 
 - **持久性（Durability）**：一个事务一旦被提交，它对数据库中数据的改变就是永久性的，接下来即使数据库发生故障也不应该对其有任何影响。
 
 </v-click>
+
+---
+
+<Title>IndexDB 的容量到底有多大？</Title>
+
+<div v-click-hide>
+
+> 取决于浏览器和磁盘空间。
+
+以 Chrome 为例，根据 [Chrome 官方文档](https://developer.chrome.com/docs/apps/offline_storage/#table)描述，持久性存储（Persistent storage）的最大容量就是硬盘上的可用空间大小。
+
+| | Temporary storage | Persistent storage | Unlimited storage |
+| ---- | ---- | ---- | ---- |
+|...|...|...|...|
+| Maximum storage space | Up to 20% of the shared pool. | As large as the available space on the hard drive. It has no fixed pool of storage. | As large as the available space on the hard drive. |
+|...|...|...|...|
+
+</div>
+
+<v-after>
+
+[chromium 源码](https://chromium.googlesource.com/chromium/src/+/refs/heads/master/storage/browser/quota/quota_settings.cc#130)
+
+```c {all|14|3-6}
+// Pool size calculated by ratio.
+int64_t pool_size_by_ratio = total * kTemporaryPoolSizeRatio;
+  int64_t pool_size =
+      kTemporaryPoolSizeFixed > 0
+          ? std::min(kTemporaryPoolSizeFixed, pool_size_by_ratio)
+          : pool_size_by_ratio;
+  settings.pool_size = pool_size;
+  settings.should_remain_available =
+      std::min(kShouldRemainAvailableFixed,
+               static_cast<int64_t>(total * kShouldRemainAvailableRatio));
+  settings.must_remain_available =
+      std::min(kMustRemainAvailableFixed,
+               static_cast<int64_t>(total * kMustRemainAvailableRatio));
+  settings.per_host_quota = pool_size * kPerHostTemporaryRatio;
+  settings.session_only_per_host_quota = std::min(
+      RandomizeByPercent(kMaxSessionOnlyHostQuota, kRandomizedPercentage),
+      static_cast<int64_t>(settings.per_host_quota *
+                           kSessionOnlyHostQuotaRatio));
+  settings.refresh_interval = base::Seconds(60);
+```
+
+</v-after>
+
+<style>
+.slidev-vclick-hidden {
+  display: none;
+}
+</style>
 
 ---
 layout: image-left
