@@ -100,14 +100,6 @@ The last comment block of each slide will be treated as slide notes. It will be 
 
 <v-click>
 
-- 💼 **IDBTransaction**：indexedDB 的所有操作都是基于事务的，事务具有 ACID 四大特性。
-
-</v-click>
-
-<br/>
-
-<v-click>
-
 - 👆︎ **IDBCursor**：游标对象，主要用来遍历数据。
 
 </v-click>
@@ -127,6 +119,18 @@ The last comment block of each slide will be treated as slide notes. It will be 
 - 🗃️ **IDBKeyRange**：索引范围对象，主要用来批量查询数据，或者批量删除数据的时候使用。
 
 </v-click>
+
+<br/>
+
+<v-click>
+
+- 💼 **IDBTransaction**：indexedDB 的所有操作都是基于事务的，事务具有 ACID 四大特性。
+
+</v-click>
+
+---
+
+<Title>IDBDatabase</Title>
 
 ---
 
