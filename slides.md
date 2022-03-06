@@ -129,6 +129,9 @@ The last comment block of each slide will be treated as slide notes. It will be 
 </v-click>
 
 ---
+# IndexedDB 核心概念
+
+---
 
 <Title>IDBDatabase</Title>
 
