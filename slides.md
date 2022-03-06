@@ -1,52 +1,42 @@
 ---
-theme: seriph
-background: https://source.unsplash.com/collection/94734566/1920x1080
+theme: light-icons
+background: http://source.unsplash.com/collection/94734566/1920x1080
 class: text-center
 highlighter: shiki
 lineNumbers: true
 download: true
 info: |
   ## 前端大容量存储方案-IndexedDB
-  [IndexDB](https://www.w3.org/TR/IndexedDB/)
+  [IndexedDB](https://www.w3.org/TR/IndexedDB/)
 drawings:
   persist: false
 title: 前端大容量存储方案-IndexedDB
 ---
+---
+layout: intro
+image: 'https://source.unsplash.com/collection/94734566/1920x1080'
+---
 
-# 前端大容量存储方案-IndexedDB
+<!-- <div class="absolute pt-6 left-12">asdasd</div> -->
 
-[IndexDB](https://www.w3.org/TR/IndexedDB/)
-
-<div class="pt-12">
-  <span @click="$slidev.nav.next" class="px-2 py-1 rounded cursor-pointer" hover="bg-white bg-opacity-10">
-    Press Space for next page <carbon:arrow-right class="inline"/>
+<div class="mb-4 absolute bottom-4 left-12">
+  <span class="text-6xl text-primary-lighter text-opacity-80" style="font-weight: 500;">
+    <a href="https://www.w3.org/TR/IndexedDB/" target="_blank">IndexedDB</a>
+    <light-icon icon="bike"/>
   </span>
+  <div class="text-9xl text-white text-opacity-60" style="font-weight: 600;">Transactional</div>
 </div>
-
-<div class="abs-br m-6 flex gap-2">
-  <button @click="$slidev.nav.openInEditor()" title="Open in Editor" class="text-xl icon-btn opacity-50 !border-none !hover:text-white">
-    <carbon:edit />
-  </button>
-  <a href="https://github.com/slidevjs/slidev" target="_blank" alt="GitHub"
-    class="text-xl icon-btn opacity-50 !border-none !hover:text-white">
-    <carbon-logo-github />
-  </a>
-</div>
-
-<!--
-The last comment block of each slide will be treated as slide notes. It will be visible and editable in Presenter Mode along with the slide. [Read more in the docs](https://sli.dev/guide/syntax.html#notes)xx
--->
 
 ---
 
-<Title>What is IndexDB?</Title>
+# What is IndexedDB?
 
 > IndexedDB 是一种底层 API，用于在客户端存储大量的结构化数据（也包括文件/二进制大型对象（blobs））。该 API 使用索引实现对数据的高性能搜索。[^1]
 
 <br/>
 <br/>
 
-|      | 会话期 Cookie | 持久性 Cookie | sessionStorage | localStorage | indexDB | WebSQL |
+|      | 会话期 Cookie | 持久性 Cookie | sessionStorage | localStorage | IndexedDB | WebSQL |
 | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
 | 存储大小 | 4kb | 4kb | 2.5 ～ 10M | 2.5 ～ 10M | >100M | 已废弃 |
 | 失效时间 | 浏览器关闭 | 设置过期时间 | 浏览器关闭 | 手动清理 | 手动清理 | 已废弃 |
@@ -57,7 +47,7 @@ The last comment block of each slide will be treated as slide notes. It will be 
 
 ---
 
-<Title>IndexedDB 特点</Title>
+# IndexedDB 关键特性
 
 - 📝 **非关系型数据库(NoSql)** - 我们都知道 MySQL 等数据库都是关系型数据库，它们的主要特点就是数据都以一张二维表的形式存储，而 IndexedDB 是非关系型数据库，主要以键值对的形式存储数据。
 
@@ -74,11 +64,23 @@ The last comment block of each slide will be treated as slide notes. It will be 
 - 🤹 **支持事务** - IndexedDB 支持事务(transaction)，这意味着一系列的操作步骤之中，只要有一步失败了，整个事务都会取消，数据库回滚的事务发生之前的状态，这和 MySQL 等数据库的事务类似。
 
 </v-clicks>
+
+<style>
+h1 {
+  background-size: 100%;
+  background-image: linear-gradient(45deg, #eea2a4 10%, #5c2223 20%);
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -moz-text-fill-color: transparent;
+}
+</style>
+
 ---
 
-<Title>IndexedDB 核心概念</Title>
+# IndexedDB 核心概念
 
-- 🛢 **IDBDatabase**： 表示数据库对象，在操作 indexedDB 之前，我们必须指定数据库。
+- 🛢 **IDBDatabase**： 表示数据库对象，通常包含一个或多个 ObjectStore。
 
 <br/>
 
@@ -129,15 +131,57 @@ The last comment block of each slide will be treated as slide notes. It will be 
 </v-click>
 
 ---
-# IndexedDB 核心概念
+layout: image-left
+image: http://source.unsplash.com/collection/94734566/1920x1080
+---
+
+# [DataBase And Request](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Basic_Terminology#key_characteristics)
+
+```javascript{all|7|8-9|all}
+// IDBDatabase
+const database = await openDb('admin', 1)
+
+function openDB (name, version = 1) {
+  return new Promise((resolve, reject) => {
+    // IDBRequest
+    const request = indexedDB.open(name, version)
+    request.onsuccess = event => resolve(event.target.result)
+    request.onerror = event => reject(event.target.errorCode)
+    // IDBDatabaseException.UNKNOWN_ERR(1): 意外错误，无法归类。
+    // IDBDatabaseException.NON_TRANSIENT_ERR(2): 操作不合法。
+    // IDBDatabaseException.NOT_FOUND_ERR(3): 未发现要操作的数据库。
+    // IDBDatabaseException.CONSTRAINT_ERR(4): 违反了数据库约束。
+    // IDBDatabaseException.DATA_ERR(5): 提供给操作的数据不符合要求。
+    // IDBDatabaseException.NOT_ALLOWED_ERR(6): 操作不合法。
+    // IDBDatabaseException.TRANSACTION_INACTIVE_ERR(7): 试图重用已完成的事务。
+    // IDBDatabaseException.ABORT_ERR(8): 请求中断。
+    // IDBDatabaseException.READ_ONLY_ERR(9): 在 READ_ONLY 事务中尝试了更改操作。
+    // IDBDatabaseException.TIMEOUT_ERR(10): 在有效时间内未完成操作。
+    // IDBDatabaseException.QUOTA_ERR(11): 磁盘空间不足。
+    // IDBDatabaseException.VER_ERR(12): 打开数据库的版本低于已有版本的请求。
+  })
+}
+```
+
+<style>
+.footnotes-sep {
+  @apply mt-20 opacity-10;
+}
+.footnotes {
+  @apply text-sm opacity-75;
+}
+.footnote-backref {
+  display: none;
+}
+</style>
 
 ---
 
-<Title>IDBDatabase</Title>
+# IDBObjectStore
 
 ---
 
-<Title>事务的四大特性</Title>
+# 事务的四大特性
 
 > 事务是一系列操作组成的工作单元，该工作单元内的操作是不可分割的，即要么所有操作都做，要么所有操作都不做，这就是事务。
 
@@ -171,7 +215,7 @@ The last comment block of each slide will be treated as slide notes. It will be 
 
 ---
 
-<Title>IndexDB 的容量到底有多大？</Title>
+# IndexedDB 的容量到底有多大？
 
 <div v-click-hide>
 
@@ -217,46 +261,6 @@ int64_t pool_size_by_ratio = total * kTemporaryPoolSizeRatio;
 
 <style>
 .slidev-vclick-hidden {
-  display: none;
-}
-</style>
-
----
-layout: image-left
-image: https://source.unsplash.com/collection/94734566/1920x1080
----
-
-<Title>Code</Title>
-
-Use code snippets and get the highlighting directly![^1]
-
-```ts {all|2|1-6|9|all}
-interface User {
-  id: number
-  firstName: string
-  lastName: string
-  role: string
-}
-
-function updateUser(id: number, update: User) {
-  const user = getUser(id)
-  const newUser = {...user, ...update}
-  saveUser(id, newUser)
-}
-```
-
-<arrow v-click="3" x1="400" y1="420" x2="230" y2="330" color="#564" width="3" arrowSize="1" />
-
-[^1]: [Learn More](https://sli.dev/guide/syntax.html#line-highlighting)
-
-<style>
-.footnotes-sep {
-  @apply mt-20 opacity-10;
-}
-.footnotes {
-  @apply text-sm opacity-75;
-}
-.footnote-backref {
   display: none;
 }
 </style>
