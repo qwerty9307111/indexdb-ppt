@@ -9,6 +9,7 @@
     "@slidev/cli": "^0.28.5",
     "@slidev/theme-default": "*",
     "@slidev/theme-seriph": "*",
+    "light-icons": "^1.0.10",
     "playwright-chromium": "^1.19.0",
     "slidev-theme-light-icons": "^1.0.2"
   },

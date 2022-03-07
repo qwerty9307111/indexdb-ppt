@@ -176,8 +176,64 @@ function openDB (name, version = 1) {
 </style>
 
 ---
+layout: dynamic-image
+image: http://source.unsplash.com/collection/94734566/1920x1080
+equal: false
+left: false
+---
 
-# IDBObjectStore
+# [IDBObjectStore](https://developer.mozilla.org/en-US/docs/Web/API/IDBDatabase/createObjectStore)
+
+<div v-click-hide>
+
+```json
+{
+  id: 1,
+  name: '张三',
+  age: 18,
+  avatar: 'http://source.unsplash.com/collection/94734566/32x32',
+  phoneNumber: '156****0112',
+  userName: 'zhangsan',
+  password: '123456',
+  ...
+}
+```
+
+</div>
+
+<div v-after>
+
+```javascript
+// IDBDatabase
+const database = await openDb('admin', 1)
+
+function openDB (name, version = 1) {
+  return new Promise((resolve, reject) => {
+    // IDBRequest
+    const request = indexedDB.open(name, version)
+    // 数据库创建或升级的时候会触发
+    request.onupgradeneeded = event => {
+      const db = event.target.result
+      // IDBObjectStore
+      const objectStore = db.createObjectStore('user', {
+        keyPath: 'id', // 主键
+        autoIncrement: true // 是否自增
+      })
+      // 创建索引
+      objectStore.createIndex("userName", "userName", { unique: false });
+      objectStore.createIndex("phoneNumber", "phoneNumber", { unique: false });
+    }
+  })
+}
+```
+
+</div>
+
+<style>
+.slidev-vclick-hidden {
+  display: none;
+}
+</style>
 
 ---
 
