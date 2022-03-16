@@ -176,7 +176,7 @@ function openDB (name, version = 1) {
 </style>
 
 ---
-layout: dynamic-image
+layout: image-left
 image: http://source.unsplash.com/collection/94734566/1920x1080
 equal: false
 left: false
@@ -201,11 +201,11 @@ left: false
 
 </div>
 
-<div v-after>
+<v-after>
 
-```javascript
+```javascript{all|12-15|17-18}
 // IDBDatabase
-const database = await openDb('admin', 1)
+const database = await openDB('admin', 1)
 
 function openDB (name, version = 1) {
   return new Promise((resolve, reject) => {
@@ -222,18 +222,24 @@ function openDB (name, version = 1) {
       // 创建索引
       objectStore.createIndex("userName", "userName", { unique: false });
       objectStore.createIndex("phoneNumber", "phoneNumber", { unique: false });
+
+      resolve(db)
     }
   })
 }
 ```
 
-</div>
+</v-after>
 
 <style>
 .slidev-vclick-hidden {
   display: none;
 }
 </style>
+
+---
+
+# IDBIndex
 
 ---
 
