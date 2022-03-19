@@ -12,20 +12,8 @@ drawings:
   persist: false
 title: 前端大容量存储方案-IndexedDB
 ---
----
-layout: intro
-image: 'https://source.unsplash.com/collection/94734566/1920x1080'
----
 
-<!-- <div class="absolute pt-6 left-12">asdasd</div> -->
-
-<div class="mb-4 absolute bottom-4 left-12">
-  <span class="text-6xl text-primary-lighter text-opacity-80" style="font-weight: 500;">
-    <a href="https://www.w3.org/TR/IndexedDB/" target="_blank">IndexedDB</a>
-    <light-icon icon="bike"/>
-  </span>
-  <div class="text-9xl text-white text-opacity-60" style="font-weight: 600;">Transactional</div>
-</div>
+<Home />
 
 ---
 
@@ -137,9 +125,9 @@ image: http://source.unsplash.com/collection/94734566/1920x1080
 
 # [DataBase And Request](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Basic_Terminology#key_characteristics)
 
-```javascript{all|7|8-9|all}
+```javascript{monaco}
 // IDBDatabase
-const database = await openDb('admin', 1)
+const database = await openDB('admin', 1)
 
 function openDB (name, version = 1) {
   return new Promise((resolve, reject) => {
@@ -174,6 +162,49 @@ function openDB (name, version = 1) {
   display: none;
 }
 </style>
+
+---
+layout: two-cols
+---
+
+<template v-slot:default>
+
+# 扩展问题
+
+```javascript
+const el = document.getElementById('button')
+el.addEventListener('click', () => {
+  console.log('click)
+})
+
+setTimeout(() => console.log('setTimeout'), 0)
+
+el.click()
+
+Promise.resolve('Promise').then(msg => {
+  sleep(3000)
+  console.log(msg)
+})
+
+console.log('start')
+// 点击鼠标，触发 button 的点击事件
+sleep(3000)
+
+el.dispatchEvent(new Event('click'))
+
+console.log('end')
+```
+
+</template>
+
+<template v-slot:right>
+
+# &nbsp;
+
+<Event />
+
+</template>
+
 
 ---
 layout: image-left
