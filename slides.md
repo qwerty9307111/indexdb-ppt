@@ -169,33 +169,37 @@ layout: two-cols
 
 <template v-slot:default>
 
-# 扩展问题
+# [扩展问题](https://html.spec.whatwg.org/multipage/webappapis.html#event-loops)
 
 ```javascript
-const el = document.getElementById('button')
-el.addEventListener('click', () => {
-  console.log('click)
+console.log('start')
+
+const button = document.getElementById('button')
+button.addEventListener('click', () => {
+  console.log('click')
 })
 
-setTimeout(() => console.log('setTimeout'), 0)
+button.click()
 
-el.click()
+openIndexedDb()
+
+setTimeout(() => console.log('setTimeout'), 0)
 
 Promise.resolve('Promise').then(msg => {
   sleep(3000)
   console.log(msg)
 })
 
-console.log('start')
 // 点击鼠标，触发 button 的点击事件
 sleep(3000)
 
-el.dispatchEvent(new Event('click'))
+button.dispatchEvent(new Event('click'))
 
 console.log('end')
 ```
 
 </template>
+
 
 <template v-slot:right>
 
@@ -204,7 +208,6 @@ console.log('end')
 <Event />
 
 </template>
-
 
 ---
 layout: image-left

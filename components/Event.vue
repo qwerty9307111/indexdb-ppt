@@ -32,26 +32,29 @@ export default {
 
       while (Date.now() - start <= time) {}
     },
+    openIndexedDb () {
+      const request = indexedDB.open('name', 1)
+      request.onsuccess = event => {
+        this.log('success')
+      }
+      request.onerror = event => {
+        this.log('error')
+      }
+    },
     eventLoop() {
+      this.openIndexedDb()
       this.result = []
+
+      this.log("start")
+
       setTimeout(() => this.log("setTimeout"), 0)
 
       this.$refs.button.click()
-
-      // const request = indexedDB.open('name', 1)
-      // request.onsuccess = event => {
-      //   this.log('success')
-      // }
-      // request.onerror = event => {
-      //   this.log('error')
-      // }
 
       Promise.resolve("Promise").then((msg) => {
         this.sleep(2000)
         this.log(msg)
       });
-
-      this.log("start")
 
       this.sleep(3000)
 
