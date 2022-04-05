@@ -125,6 +125,8 @@ image: http://source.unsplash.com/collection/94734566/1920x1080
 
 # [DataBase And Request](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Basic_Terminology#key_characteristics)
 
+<IDBDatabase />
+
 ```javascript{monaco}
 // IDBDatabase
 const database = await openDB('admin', 1)
