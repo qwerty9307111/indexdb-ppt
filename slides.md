@@ -220,7 +220,6 @@ left: false
 
 # [IDBObjectStore](https://developer.mozilla.org/en-US/docs/Web/API/IDBDatabase/createObjectStore)
 
-<div v-click-hide>
 
 ```json
 {
@@ -235,9 +234,11 @@ left: false
 }
 ```
 
-</div>
+---
 
-<v-after>
+# [IDBObjectStore & IDBIndex](https://developer.mozilla.org/en-US/docs/Web/API/IDBIndex)
+
+<IDBObjectStore />
 
 ```javascript{all|12-15|17-18}
 // IDBDatabase
@@ -265,8 +266,6 @@ function openDB (name, version = 1) {
 }
 ```
 
-</v-after>
-
 <style>
 .slidev-vclick-hidden {
   display: none;
@@ -275,7 +274,7 @@ function openDB (name, version = 1) {
 
 ---
 
-# IDBIndex
+# [IDBKeyRange](https://developer.mozilla.org/en-US/docs/Web/API/IDBKeyRange)
 
 ---
 

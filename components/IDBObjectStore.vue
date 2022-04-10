@@ -2,6 +2,7 @@
   <Button @click="open">open</Button>
   <Button @click="close">close</Button>
   <Button @click="deleteDBAll">delete</Button>
+  <Button @click="push">insert</Button>
 </template>
 <script>
 export default {
@@ -46,26 +47,57 @@ export default {
         }
       }
     },
+    push () {
+      const name = prompt("please enter name", "zhangsan");
+      if (name != null && name != "") {
+        const phoneNumber = prompt("please enter phoneNumber", "15683360112");
+        if (phoneNumber) {
+          const data = {
+            name,
+            age: 18,
+            avatar: 'http://source.unsplash.com/collection/94734566/32x32',
+            phoneNumber,
+            password: '123456',
+          }
+          this.addData(this.db, 'user', data)
+        }
+      }
+    },
+    addData(db, storeName, data) {
+      var request = db
+        .transaction([storeName], "readwrite") // 事务对象 指定表格名称和操作模式（"只读"或"读写"）
+        .objectStore(storeName) // 仓库对象
+        .add(data);
+
+      request.onsuccess = function (event) {
+        console.log("数据写入成功");
+      };
+
+      request.onerror = function (event) {
+        console.log("数据写入失败");
+      };
+    },
     openDB(name, version = 1) {
       return new Promise((resolve, reject) => {
-        // IDBRequest
         const request = indexedDB.open(name, version);
-        request.onsuccess = (event) => resolve(event.target.result);
+        // request.onsuccess = (event) => resolve(event.target.result);
         request.onerror = (event) => reject(event.target.errorCode);
-        // IDBDatabaseException.UNKNOWN_ERR(1): 意外错误，无法归类。
-        // IDBDatabaseException.NON_TRANSIENT_ERR(2): 操作不合法。
-        // IDBDatabaseException.NOT_FOUND_ERR(3): 未发现要操作的数据库。
-        // IDBDatabaseException.CONSTRAINT_ERR(4): 违反了数据库约束。
-        // IDBDatabaseException.DATA_ERR(5): 提供给操作的数据不符合要求。
-        // IDBDatabaseException.NOT_ALLOWED_ERR(6): 操作不合法。
-        // IDBDatabaseException.TRANSACTION_INACTIVE_ERR(7): 试图重用已完成的事务。
-        // IDBDatabaseException.ABORT_ERR(8): 请求中断。
-        // IDBDatabaseException.READ_ONLY_ERR(9): 在 READ_ONLY 事务中尝试了更改操作。
-        // IDBDatabaseException.TIMEOUT_ERR(10): 在有效时间内未完成操作。
-        // IDBDatabaseException.QUOTA_ERR(11): 磁盘空间不足。
-        // IDBDatabaseException.VER_ERR(12): 打开数据库的版本低于已有版本的请求。
+        request.onupgradeneeded  = event => {
+          const db = event.target.result
+          resolve(event.target.result)
+          // IDBObjectStore
+          const objectStore = db.createObjectStore('user', {
+            keyPath: 'id', // 主键
+            autoIncrement: true // 是否自增
+          })
+          // 创建索引
+          objectStore.createIndex("name", "name", { unique: false });
+          objectStore.createIndex("phoneNumber", "phoneNumber", { unique: false });
+
+          resolve(db)
+        }
       });
-    },
+    }
   },
 };
 </script>
