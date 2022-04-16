@@ -279,7 +279,7 @@ function openDB (name, version = 1) {
   right: 0;
   bottom: 0;
   top: 0;
-  background: url(./public/index.drawio.png);
+  background: url(./index.drawio.png);
   background-position: calc(100% - 24px) 100px;
   background-size: 380px;
   background-repeat: no-repeat;
