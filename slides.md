@@ -37,7 +37,7 @@ title: 前端大容量存储方案-IndexedDB
 
 # IndexedDB 关键特性
 
-- 📝 **非关系型数据库(NoSql)** - 我们都知道 MySQL 等数据库都是关系型数据库，它们的主要特点就是数据都以一张二维表的形式存储，而 IndexedDB 是非关系型数据库，主要以键值对的形式存储数据。
+- 📝 **非关系型数据库(NoSql)** - 我们都知道 MySQL 等数据库都是关系型数据库，它们的主要特点就是数据都以一张二维表的形式存储，而 <a style="color: red;" href="https://www.wikiwand.com/en/Object_database" target="_blank">IndexedDB 是非关系型数据库，</a> 主要以键值对的形式存储数据。
 
 <v-clicks>
 
@@ -238,9 +238,11 @@ left: false
 
 # [IDBObjectStore & IDBIndex](https://developer.mozilla.org/en-US/docs/Web/API/IDBIndex)
 
+<div class="IDBIndex"></div>
+
 <IDBObjectStore />
 
-```javascript{all|12-15|17-18}
+```javascript{all|12-15|17-19}
 // IDBDatabase
 const database = await openDB('admin', 1)
 
@@ -256,9 +258,10 @@ function openDB (name, version = 1) {
         keyPath: 'id', // 主键
         autoIncrement: true // 是否自增
       })
-      // 创建索引
+      // IDBIndex
       objectStore.createIndex("userName", "userName", { unique: false });
       objectStore.createIndex("phoneNumber", "phoneNumber", { unique: false });
+      objectStore.createIndex("age", "age", { unique: false });
 
       resolve(db)
     }
@@ -270,7 +273,52 @@ function openDB (name, version = 1) {
 .slidev-vclick-hidden {
   display: none;
 }
+.IDBIndex {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  background: url(./assets/index.drawio.png);
+  background-position: calc(100% - 24px) 100px;
+  background-size: 380px;
+  background-repeat: no-repeat;
+  z-index: 9;
+  pointer-events: none;
+}
 </style>
+
+---
+
+# [IDBCursor](https://developer.mozilla.org/en-US/docs/Web/API/IDBCursor)
+
+<IDBCursor/>
+
+```javascript
+const list = [];
+const store = this.db
+  .transaction(this.storeName, "readwrite") // IDBTransaction
+  .objectStore(this.storeName); // IDBObjectStore
+const request = store.openCursor(); // IDBCursor
+// IDBRequest
+request.onsuccess = function (e) {
+  const cursor = e.target.result;
+  if (cursor) {
+    list.push(cursor.value);
+    cursor.continue();
+  } else {
+    console.log(list);
+  }
+}
+```
+
+<v-click>
+
+```javascript
+for (let i = 0; i < length; i++) {}
+```
+
+</v-click>
 
 ---
 
