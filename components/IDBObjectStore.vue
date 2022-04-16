@@ -4,7 +4,7 @@
   <Button @click="deleteDBAll">delete</Button>
   <Button @click="push">insert</Button>
   <Button @click="query">get</Button>
-  <Button @click="query">getAll</Button>
+  <Button @click="queryAll">getAll</Button>
 </template>
 <script>
 import Mixins from './Mixins'

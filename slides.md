@@ -180,7 +180,6 @@ const button = document.getElementById('button')
 button.addEventListener('click', () => {
   console.log('click')
 })
-
 button.click()
 
 openIndexedDb()
@@ -188,12 +187,13 @@ openIndexedDb()
 setTimeout(() => console.log('setTimeout'), 0)
 
 Promise.resolve('Promise').then(msg => {
-  sleep(3000)
   console.log(msg)
 })
 
 // 点击鼠标，触发 button 的点击事件
-sleep(3000)
+sleep(2000)
+
+setTimeout(() => this.log("setTimeout2"), 0)
 
 button.dispatchEvent(new Event('click'))
 
@@ -279,7 +279,7 @@ function openDB (name, version = 1) {
   right: 0;
   bottom: 0;
   top: 0;
-  background: url(./assets/index.drawio.png);
+  background: url(./index.drawio.png);
   background-position: calc(100% - 24px) 100px;
   background-size: 380px;
   background-repeat: no-repeat;

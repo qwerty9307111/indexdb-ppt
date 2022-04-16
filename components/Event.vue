@@ -52,11 +52,12 @@ export default {
       this.$refs.button.click()
 
       Promise.resolve("Promise").then((msg) => {
-        this.sleep(2000)
         this.log(msg)
       });
 
-      this.sleep(3000)
+      this.sleep(2000)
+
+      setTimeout(() => this.log("setTimeout2"), 0)
 
       this.$refs.button.dispatchEvent(new Event('click'))
       this.log("end")
