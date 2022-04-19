@@ -120,7 +120,7 @@ h1 {
 
 ---
 layout: image-left
-image: http://source.unsplash.com/collection/94734566/1920x1080
+image: http://source.unsplash.com/collection/94734567/1920x1080
 ---
 
 # [DataBase And Request](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Basic_Terminology#key_characteristics)
@@ -213,7 +213,7 @@ console.log('end')
 
 ---
 layout: image-left
-image: http://source.unsplash.com/collection/94734566/1920x1080
+image: http://source.unsplash.com/collection/94734568/1920x1080
 equal: false
 left: false
 ---
@@ -288,6 +288,11 @@ function openDB (name, version = 1) {
 }
 </style>
 
+---
+layout: image-right
+image: http://source.unsplash.com/collection/94734569/1920x1080
+equal: false
+left: false
 ---
 
 # [IDBCursor](https://developer.mozilla.org/en-US/docs/Web/API/IDBCursor)
