@@ -8,6 +8,38 @@ export default {
     };
   },
   methods: {
+    queryByCursorOnIndex () {
+      const list = []
+      if (!this.db) { return }
+      const store = this.db
+        .transaction(this.storeName, "readwrite")
+        .objectStore(this.storeName)
+
+      const indexName = prompt("please enter indexName", "phoneNumber")
+      const indexValue = prompt("please enter indexValue", "15683360112")
+
+      const request = store
+        .index(indexName)
+        .openCursor(IDBKeyRange.only(indexValue))
+
+      request.onsuccess = function (e) {
+        const cursor = e.target.result
+        console.log('cursor', cursor)
+        if (cursor) {
+          const value = cursor.value // next object store object (book object)
+          const key = cursor.key // next index key (price)
+          console.log(key, value)
+          list.push(value)
+          cursor.continue()
+        } else {
+          console.log("游标索引查询结果：", list)
+        }
+      }
+
+      request.onerror = function (e) {
+        console.log(e)
+      }
+    },
     cursorGetData () {
       const list = [];
       const store = this.db
@@ -16,7 +48,7 @@ export default {
       const request = store.openCursor();
       request.onsuccess = function (e) {
         const cursor = e.target.result;
-        console.log('cursor', cursor)
+        console.log('cursor', cursor, typeof cursor)
         if (cursor) {
           list.push(cursor.value);
           cursor.continue();

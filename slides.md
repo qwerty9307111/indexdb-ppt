@@ -37,7 +37,7 @@ title: 前端大容量存储方案-IndexedDB
 
 # IndexedDB 关键特性
 
-- 📝 **非关系型数据库(NoSql)** - 我们都知道 MySQL 等数据库都是关系型数据库，它们的主要特点就是数据都以一张二维表的形式存储，而 <a style="color: red;" href="https://www.wikiwand.com/en/Object_database" target="_blank">IndexedDB 是非关系型数据库，</a> 主要以键值对的形式存储数据。
+- 📝 **非关系型数据库(NoSql)** - 我们都知道 MySQL 等数据库都是关系型数据库，它们的主要特点就是数据都以一张二维表的形式存储，而 <a style="color: red;" href="https://www.wikiwand.com/en/Object_database" target="_blank">IndexedDB 更像是非关系型数据库，</a> 主要以键值对的形式存储数据。
 
 <v-clicks>
 
@@ -327,6 +327,35 @@ for (let i = 0; i < length; i++) {}
 
 ---
 
+# IDBCursor 和 IDBIndex 结合使用
+
+```javascript
+const list = []
+const store = this.db
+  .transaction(this.storeName, "readwrite")
+  .objectStore(this.storeName)
+
+const request = store
+  .index(indexName)
+  .openCursor(IDBKeyRange.only(indexValue))
+
+request.onsuccess = function (e) {
+  const cursor = e.target.result
+  if (cursor) {
+    list.push(cursor.value) // next object store object (book object)
+    cursor.continue()
+  } else {
+    console.log("游标索引查询结果：", list)
+  }
+}
+
+request.onerror = function (e) {
+  console.log(e)
+}
+```
+
+---
+
 # [IDBKeyRange](https://developer.mozilla.org/en-US/docs/Web/API/IDBKeyRange)
 
 ---
@@ -343,7 +372,7 @@ for (let i = 0; i < length; i++) {}
 
 <v-click>
 
-- **一致性（Consistency）**：事务必须使数据库从一个一致性状态变换到另外一个一致性状态。
+- **隔离性（Isolation）**：多个用户并发访问数据库时，数据库为每一个用户开启的事务，不能被其他事务的操作数据所干扰，多个并发事务之间要相互隔离。
 
 </v-click>
 
@@ -351,7 +380,7 @@ for (let i = 0; i < length; i++) {}
 
 <v-click>
 
-- **隔离性（Isolation）**：多个用户并发访问数据库时，数据库为每一个用户开启的事务，不能被其他事务的操作数据所干扰，多个并发事务之间要相互隔离。
+- **一致性（Consistency）**：事务必须使数据库从一个一致性状态变换到另外一个一致性状态。
 
 </v-click>
 
@@ -362,6 +391,91 @@ for (let i = 0; i < length; i++) {}
 - **持久性（Durability）**：一个事务一旦被提交，它对数据库中数据的改变就是永久性的，接下来即使数据库发生故障也不应该对其有任何影响。
 
 </v-click>
+
+---
+preload: false
+---
+
+# 原子性（Atomicity）
+
+> 事务是一个不可分割的工作单位，事务中的操作要么全部成功，要么全部失败。
+
+<IDBTransaction type="Atomicity"/>
+
+```javascript
+// STEP 1
+A = read('张三')
+B = read('李四')
+
+// STEP 2
+A + 10
+B - 10
+
+// STEP 3
+write(A)
+// !? WHAT HAPPENS IF ABORT HERE
+write(B)
+
+A.balance = A.balance + 10
+B.balance = B.balance - 10
+const trans = this.db.transaction(['user'], "readwrite")
+const store = trans.objectStore('user')
+store.put(A)
+trans.abort()
+store.put(B)
+```
+
+---
+
+# 隔离性（Isolation）
+
+> 多个用户并发访问数据库时，数据库为每一个用户开启的事务，不能被其他事务的操作数据所干扰，多个并发事务之间要相互隔离。
+
+|                                                              |                                                              |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| A = read('张三')<br />A + 5<br />write(A)<br />B = read('李四')<br />B - 5<br />write(B) | B2 = read('李四')<br />B2 - 5<br />write(B2)<br />A2 = read('张三')<br />A2 + 5<br />write(A2)<br /> |
+| A = read('张三') // 0<br />A2 = read('张三') // 0<br />A + 5 // 5<br />write(A) // 5<br />B = read('李四') // 10<br />B - 5 // 5<br />write(B) // 5<br />A2 + 5 // 5<br />write(A2) // 5<br />B2 = read('李四') // 5<br />B2 - 5 // 0<br />write(B2) // 0 |                                                              |
+
+---
+
+# 一致性（Consistency） & 持久性（Durability）
+
+> 事务必须使数据库从一个一致性状态变换到另外一个一致性状态。
+
+> 一个事务一旦被提交，它对数据库中数据的改变就是永久性的，接下来即使数据库发生故障也不应该对其有任何影响。
+
+```mermaid {theme: 'neutral', scale: 0.8}
+graph TD
+B[Actived] --> |The last operation is completed| C[partially committed]
+B -->|Encountered an error or stopped manually| D[failed]
+C -->|An error was encountered while refreshing to disk| D[failed]
+C -->|Refresh to disk| F[committed]
+D -->|Rollback operation completed| G[aborted]
+```
+
+---
+
+# [IndexedDB 可以存储的数据类型](https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API/Structured_clone_algorithm)
+
+> 所有可以使用结构化克隆算法复制的对象
+
+| 对象类型 | 注意 |
+| ---- | ---- |
+|所有的原始类型|symbols 除外|
+Boolean 对象
+String 对象
+Date
+|RegExp	|lastIndex 字段不会被保留。|
+Blob
+File
+FileList
+ArrayBuffer
+|ArrayBufferView	|这基本上意味着所有的 类型化数组 ，如 Int32Array 等。|
+ImageData
+Array
+|Object	|仅包括普通对象（如对象字面量）|
+Map
+Set
 
 ---
 
@@ -417,232 +531,12 @@ int64_t pool_size_by_ratio = total * kTemporaryPoolSizeRatio;
 
 ---
 
-# Components
+# 使用场景
 
-<div grid="~ cols-2 gap-4">
-<div>
-
-You can use Vue components directly inside your slides.
-
-We have provided a few built-in components like `<Tweet/>` and `<Youtube/>` that you can use directly. And adding your custom components is also super easy.
-
-```html
-<Counter :count="10" />
-```
-
-<!-- ./components/Counter.vue -->
-<Counter :count="10" m="t-4" />
-
-Check out [the guides](https://sli.dev/builtin/components.html) for more.
-
-</div>
-<div>
-
-```html
-<Tweet id="1390115482657726468" />
-```
-
-<Tweet id="1390115482657726468" scale="0.65" />
-
-</div>
-</div>
-
-
----
-class: px-20
----
-
-# Themes
-
-Slidev comes with powerful theming support. Themes can provide styles, layouts, components, or even configurations for tools. Switching between themes by just **one edit** in your frontmatter:
-
-<div grid="~ cols-2 gap-2" m="-t-2">
-
-```yaml
----
-theme: default
----
-```
-
-```yaml
----
-theme: seriph
----
-```
-
-<img border="rounded" src="https://github.com/slidevjs/themes/blob/main/screenshots/theme-default/01.png?raw=true">
-
-<img border="rounded" src="https://github.com/slidevjs/themes/blob/main/screenshots/theme-seriph/01.png?raw=true">
-
-</div>
-
-Read more about [How to use a theme](https://sli.dev/themes/use.html) and
-check out the [Awesome Themes Gallery](https://sli.dev/themes/gallery.html).
-
----
-preload: false
----
-
-# Animations
-
-Animations are powered by [@vueuse/motion](https://motion.vueuse.org/).
-
-```html
-<div
-  v-motion
-  :initial="{ x: -80 }"
-  :enter="{ x: 0 }">
-  Slidev
-</div>
-```
-
-<div class="w-60 relative mt-6">
-  <div class="relative w-40 h-40">
-    <img
-      v-motion
-      :initial="{ x: 800, y: -100, scale: 1.5, rotate: -50 }"
-      :enter="final"
-      class="absolute top-0 left-0 right-0 bottom-0"
-      src="https://sli.dev/logo-square.png"
-    />
-    <img
-      v-motion
-      :initial="{ y: 500, x: -100, scale: 2 }"
-      :enter="final"
-      class="absolute top-0 left-0 right-0 bottom-0"
-      src="https://sli.dev/logo-circle.png"
-    />
-    <img
-      v-motion
-      :initial="{ x: 600, y: 400, scale: 2, rotate: 100 }"
-      :enter="final"
-      class="absolute top-0 left-0 right-0 bottom-0"
-      src="https://sli.dev/logo-triangle.png"
-    />
-  </div>
-
-  <div
-    class="text-5xl absolute top-14 left-40 text-[#2B90B6] -z-1"
-    v-motion
-    :initial="{ x: -80, opacity: 0}"
-    :enter="{ x: 0, opacity: 1, transition: { delay: 2000, duration: 1000 } }">
-    Slidev
-  </div>
-</div>
-
-<!-- vue script setup scripts can be directly used in markdown, and will only affects current page -->
-<script setup lang="ts">
-const final = {
-  x: 0,
-  y: 0,
-  rotate: 0,
-  scale: 1,
-  transition: {
-    type: 'spring',
-    damping: 10,
-    stiffness: 20,
-    mass: 2
-  }
-}
-</script>
-
-<div
-  v-motion
-  :initial="{ x:35, y: 40, opacity: 0}"
-  :enter="{ y: 0, opacity: 1, transition: { delay: 3500 } }">
-
-[Learn More](https://sli.dev/guide/animations.html#motion)
-
-</div>
-
----
-
-# LaTeX
-
-LaTeX is supported out-of-box powered by [KaTeX](https://katex.org/).
-
-<br>
-
-Inline $\sqrt{3x-1}+(1+x)^2$
-
-Block
-$$
-\begin{array}{c}
-
-\nabla \times \vec{\mathbf{B}} -\, \frac1c\, \frac{\partial\vec{\mathbf{E}}}{\partial t} &
-= \frac{4\pi}{c}\vec{\mathbf{j}}    \nabla \cdot \vec{\mathbf{E}} & = 4 \pi \rho \\
-
-\nabla \times \vec{\mathbf{E}}\, +\, \frac1c\, \frac{\partial\vec{\mathbf{B}}}{\partial t} & = \vec{\mathbf{0}} \\
-
-\nabla \cdot \vec{\mathbf{B}} & = 0
-
-\end{array}
-$$
-
-<br>
-
-[Learn more](https://sli.dev/guide/syntax#latex)
-
----
-
-# Diagrams
-
-You can create diagrams / graphs from textual descriptions, directly in your Markdown.
-
-<div class="grid grid-cols-3 gap-10 pt-4 -mb-6">
-
-```mermaid {scale: 0.5}
-sequenceDiagram
-    Alice->John: Hello John, how are you?
-    Note over Alice,John: A typical interaction
-```
-
-```mermaid {theme: 'neutral', scale: 0.8}
-graph TD
-B[Text] --> C{Decision}
-C -->|One| D[Result 1]
-C -->|Two| E[Result 2]
-```
-
-```plantuml {scale: 0.7}
-@startuml
-
-package "Some Group" {
-  HTTP - [First Component]
-  [Another Component]
-}
-
-node "Other Groups" {
-  FTP - [Second Component]
-  [First Component] --> FTP
-}
-
-cloud {
-  [Example 1]
-}
-
-
-database "MySql" {
-  folder "This is my folder" {
-    [Folder 3]
-  }
-  frame "Foo" {
-    [Frame 4]
-  }
-}
-
-
-[Another Component] --> [Example 1]
-[Example 1] --> [Folder 3]
-[Folder 3] --> [Frame 4]
-
-@enduml
-```
-
-</div>
-
-[Learn More](https://sli.dev/guide/syntax.html#diagrams)
-
+- [ChromeCanvas](https://canvas.apps.chrome/)
+- [spreadsheets](https://docs.google.com/spreadsheets/d/1R8966rb-ldup9_QWIhO9ZU3_rFtY-aXUwMewwYY8lTQ/edit#gid=1386834576)
+- [腾讯文档](https://docs.qq.com/sheet/DSUxJV3ViTnZUaFBN?u=421bbb99cfa44dc9af1e117cd074c1ae)
+- [飞书](https://www.feishu.cn/product/sheets)
 
 ---
 layout: center
